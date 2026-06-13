@@ -1,0 +1,41 @@
+Voting Application
+
+where a user can vote to the electoral candidates
+
+Models?
+Routes?
+
+Functionalities -> 
+
+1. User sign in/sign up
+2. see the list of candidates
+3. vote one of the candidates, after which the user cannot vote again
+4. a route which shows a list of candidates and their live vote count
+5. user should have unique identification number as a government id proof: same as aadhar
+6. there should be an admin who maintains the candidate list, but cannot vote
+7. users can change their password
+8. users can only login with aadhar card number and password
+
+______________________________________________________________________________________________
+
+Routes -> 
+
+User Authentication
+    /signup: POST - Creates user
+    /login: POST - Login to the existing account [ aadhar card number and password]
+
+Voting
+    /candidates: GET - fetches the list of candidates
+    /vote/:candidateId: POST - vote for a specific candidate
+
+Vote counts
+    /vote/counts: GET - get the list of candidates sorted by their vote counts
+
+User profile
+    /profile: GET - get the user's profile
+    /profile/password: PUT - change user's password
+
+Admin Candidate Management
+    /candidate: POST - create new candidate
+    /candidate/:candidateId: PUT - update an existing candidate
+    /candidate/:candidateId: DELETE - delete a candidate from the list
