@@ -4,63 +4,49 @@ const router = express.Router();
 const User = require('../models/user');
 const Candidate = require('../models/candidate');
 const { jwtAuthMiddleware, generateToken } = require('../jwt');
+const { asyncHandler } = require('../middleware/errorHandler');
 
 
-router.post('/signup', async (req, res) => {
-    try {
-        /// gather body data from the request
-        const data = req.body;
-        const newUser = new User(data);
+router.post('/signup', asyncHandler(async (req, res) => {
+    /// gather body data from the request
+    const data = req.body;
+    const newUser = new User(data);
 
-        /// save the user
-        const response = await newUser.save();
+    /// save the user
+    const response = await newUser.save();
 
-        const payload = {
-            id: response.id,
-        }
-
-        /// generate token
-        const token = generateToken(payload);
-
-        console.log('User created: ', response);
-        res.status(200).json({ response: response, accessToken: token })
-    } catch (err) {
-        console.log(err);
-        res.status(500).json({ error: 'Internal server error' });
+    const payload = {
+        id: response.id,
     }
-})
 
-router.post('/login', async (req, res) => {
-    try {
-        const { aadharCardNumber, password } = req.body;
+    /// generate token
+    const token = generateToken(payload);
 
-        const user = await User.findOne({ aadharCardNumber: aadharCardNumber });
-        if (!user || !(await user.comparePassword(password))) {
-            return res.status(404).json({ error: 'Invalid credentials'});
-        }
+    console.log('User created: ', response);
+    res.status(200).json({ response: response, accessToken: token })
+}))
 
-        const payload = {
-            id: user.id,
-        }
+router.post('/login', asyncHandler(async (req, res) => {
+    const { aadharCardNumber, password } = req.body;
 
-        const token = generateToken(payload);
-
-        res.status(200).json({ accessToken: token });
-    } catch (err) {
-        console.log(err);
-        res.status(500).json({ error: 'Internal server error' });
+    const user = await User.findOne({ aadharCardNumber: aadharCardNumber });
+    if (!user || !(await user.comparePassword(password))) {
+        return res.status(404).json({ error: 'Invalid credentials'});
     }
-})
 
-router.get('/allUsers', jwtAuthMiddleware, async (req, res) => {
-    try {
-        const users = await User.find();
-        res.status(200).json({ users: users });
-    } catch (err) {
-        console.log(err);
-        res.status(500).json({ error: 'Internal server error' });
+    const payload = {
+        id: user.id,
     }
-})
+
+    const token = generateToken(payload);
+
+    res.status(200).json({ accessToken: token });
+}))
+
+router.get('/allUsers', jwtAuthMiddleware, asyncHandler(async (req, res) => {
+    const users = await User.find();
+    res.status(200).json({ users: users });
+}))
 
 
 

@@ -20,6 +20,9 @@ app.use('/candidate', jwtAuthMiddleware, candidateRoutes);
 const votingRoutes = require('./routes/voting_route');
 app.use('/vote', jwtAuthMiddleware, votingRoutes);
 
+const { errorHandler } = require('./middleware/errorHandler');
+app.use(errorHandler);
+
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
